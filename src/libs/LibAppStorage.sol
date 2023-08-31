@@ -3,19 +3,41 @@ pragma solidity >=0.8.21;
 
 import "../shared/Structs.sol";
 
+
 struct AppStorage {
     bool diamondInitialized;
     uint256 reentrancyStatus;
     MetaTxContextStorage metaTxContext;
 
-    /*
-    TODO: Customize storage variables here
+    ///
+    /// Settings
+    ///
+    Settings settings;
 
-    NOTE: Once contracts have been deployed you cannot modify the existing entries here. You can only append 
-    new entries. Otherwise, any subsequent upgrades you perform will break the memory structure of your 
-    deployed contracts.
-    */
+    ///
+    /// ERC20
+    ///
     mapping(address => ERC20Token) erc20s;
+
+    ///
+    /// Games
+    ///
+
+    // no. of games
+    uint numGames;
+    // game id => game
+    mapping(uint => Game) games;
+    
+    ///
+    /// Players
+    ///
+    mapping(address => Player) players;
+
+    ///
+    /// NFT tokens
+    ///
+    // collection id => game id
+    mapping(uint => uint) tokenGames;
 }
 
 library LibAppStorage {

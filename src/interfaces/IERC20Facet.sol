@@ -7,15 +7,6 @@ pragma solidity >=0.8.21;
  */
 interface IERC20Facet {
   /**
-   * @dev Deploy new token.
-   * 
-   * @param name The name of the token.
-   * @param symbol The symbol of the token.
-   * @param decimals The decimals places of the token.
-   */
-  function erc20DeployToken(string memory name, string memory symbol, uint8 decimals) external;
-
-  /**
    * @dev Returns the name of the token.
    *
    * @param token The token address.

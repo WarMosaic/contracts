@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
+import { ERC20 } from "../facades/ERC20.sol";
 import { ERC20Token } from "../shared/Structs.sol";
 import { AppStorage, LibAppStorage } from "./LibAppStorage.sol";
 
@@ -19,6 +20,29 @@ library LibERC20 {
    * @dev Emitted when a token is transferred.
    */
   event ERC20Transferred(address token, address from, address to, uint256 value);
+  /**
+   * @dev Emitted when a new token is deployed.
+   */
+  event ERC20NewToken(address token);
+
+  /**
+   * @dev Deploy new token.
+   * 
+   * @param name The name of the token.
+   * @param symbol The symbol of the token.
+   */
+  function deployToken(string memory name, string memory symbol) internal returns (address) {
+    address token = address(new ERC20(address(this)));
+
+    ERC20Token storage t = LibAppStorage.diamondStorage().erc20s[token];
+    t.name = name;
+    t.symbol = symbol;
+    t.decimals = 18;
+
+    emit ERC20NewToken(token);
+
+    return token;
+  }
 
   /**
     * @dev Transfer a token.

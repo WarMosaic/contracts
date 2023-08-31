@@ -22,8 +22,8 @@ contract ERC20 is IERC20, IERC20Metadata, MetaContext {
    *
    * @param parent The parent Diamond that implements the business logic.
    */
-  constructor(IERC20Facet parent) {
-    _parent = parent;
+  constructor(address parent) {
+    _parent = IERC20Facet(parent);
   }
 
   /*

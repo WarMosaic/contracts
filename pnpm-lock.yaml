@@ -21,8 +21,8 @@ devDependencies:
     specifier: ^8.0.1
     version: 8.0.1
   gemforge:
-    specifier: ^1.3.4
-    version: 1.3.4
+    specifier: ^1.5.2
+    version: 1.5.2
   husky:
     specifier: ^8.0.2
     version: 8.0.3
@@ -2307,8 +2307,8 @@ packages:
     resolution: {integrity: sha512-yIovAzMX49sF8Yl58fSCWJ5svSLuaibPxXQJFLmBObTuCr0Mf1KiPopGM9NiFjiYBCbfaa2Fh6breQ6ANVTI0A==}
     dev: true
 
-  /gemforge@1.3.4:
-    resolution: {integrity: sha512-iF47l5QAeXPqO/ZDqQ2BfXI5qmIBPlQcdTfdljLuY+kCDp4eHjSACVFYKC0MXVrQBy/jIGerYQ/3xFaGhnKaSg==}
+  /gemforge@1.5.2:
+    resolution: {integrity: sha512-Vol0Lc+FfCIytqZD4UMSFwWuy+PD0vKREChYFH4UNWm/D8DMKoYeoG16X47w22bRjL/DEwrZRLoH8dBxoarljw==}
     engines: {node: '>=20.0.0'}
     hasBin: true
     dependencies:
