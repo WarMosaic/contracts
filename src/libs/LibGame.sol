@@ -10,6 +10,8 @@ error InvalidGameTile(uint gameId, uint tileId);
 error GameInWrongState(uint gameId);
 
 library LibGame {
+  event QuadClaimed(uint gameId, uint tileId, address player);
+
   function assertGameId(AppStorage storage s, uint gameId) internal view {
     if (gameId < 1 || gameId > s.numGames) {
       revert InvalidGame(gameId);
@@ -50,10 +52,6 @@ library LibGame {
     t.owner = newOwner;
   }
 
-  function updateQuadStatus(AppStorage storage s, Game storage g, Tile storage t) internal {
-
-  }
-
   function calculateAndApplyFees(uint amount, address creator, address referer) internal returns (uint amountMinusFees, uint totalFees) {
     AppStorage storage s = LibAppStorage.diamondStorage();
     Settings storage settings = s.settings;
@@ -79,5 +77,35 @@ library LibGame {
     }
 
     s.users[projectWallet].balance += projectFeeAmount;
+  }
+
+  function tryAndClaimQuad(AppStorage storage s, Game storage g, Tile storage t) internal {
+    // work out quad this tile belongs to
+    uint quadStartId = ((t.id - 1) / 4) * 4 + 1;
+    uint quadEndId = quadStartId + 3;
+
+    uint potsClaimed = 0;
+
+    for (uint i = quadStartId; i <= quadEndId; i++) {
+      Tile storage quadTile = g.tiles[i];
+      if (quadTile.owner != t.owner) {
+        return;
+      }
+    }
+
+    // if we get here then all tiles in the quad are owned by the same player
+    // if quad is not already claimed then claim it
+    if (!t.potClaimed) {
+      g.numTilesPotsClaimed += 4;
+
+      for (uint i = quadStartId; i <= quadEndId; i++) {
+        Tile storage quadTile = g.tiles[i];
+        quadTile.potClaimed = true;
+        // transfer pot to owner
+        s.users[quadTile.owner].balance += quadTile.pot;
+      }
+
+      emit QuadClaimed(g.id, quadStartId, t.owner);
+    }
   }
 }

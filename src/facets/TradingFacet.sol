@@ -36,7 +36,7 @@ contract TradingFacet is MetaContext {
       (uint finalAmount, ) = LibGame.calculateAndApplyFees(amount, g.creator, g.players[t.owner].referer);
       s.users[t.owner].balance += finalAmount;
 
-      LibGame.updateQuadStatus(s, g, t);
+      LibGame.tryAndClaimQuad(s, g, t);
 
       g.lastUpdated = block.timestamp;
     }

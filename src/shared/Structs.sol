@@ -51,6 +51,7 @@ struct Game {
   uint id;
   address creator;
   uint numTilesOwned;
+  uint numTilesPotsClaimed;
   GameState state;
   uint lastUpdated;
   bool transferLocked;

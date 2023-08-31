@@ -26,7 +26,7 @@ contract GameplayFacet is MetaContext {
 
       g.tiles[tileId].owner = owner;
 
-      LibGame.updateQuadStatus(s, g, g.tiles[tileId]);
+      LibGame.tryAndClaimQuad(s, g, g.tiles[tileId]);
     }
 
     g.lastUpdated = block.timestamp;
