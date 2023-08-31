@@ -29,9 +29,9 @@ struct AppStorage {
     mapping(uint => Game) games;
     
     ///
-    /// Players
+    /// Users
     ///
-    mapping(address => Player) players;
+    mapping(address => User) users;
 
     ///
     /// NFT tokens

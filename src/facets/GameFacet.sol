@@ -17,7 +17,7 @@ contract GameFacet is MetaContext {
   event GameCreated(address creator, uint gameId);
   event GameJoined(uint gameId, uint tileId, address player);
 
-  function createGame(GameCreationConfig memory cfg) external {
+  function createGame(GameConfig memory cfg) external {
     if (cfg.numTiles == 0 || cfg.numTiles > 1024 || cfg.numTiles % 4 != 0) {
       revert GameInvalidNumTiles(cfg.numTiles);
     }
@@ -34,16 +34,16 @@ contract GameFacet is MetaContext {
     s.numGames++;
     Game storage g = s.games[s.numGames];
 
-    g.i.id = s.numGames;
-    g.i.creator = _msgSender();
-    g.i.cfg = cfg;
-    g.i.state = GameState.AwaitingPlayers;
-    g.i.lastUpdated = block.timestamp;
+    g.id = s.numGames;
+    g.creator = _msgSender();
+    g.cfg = cfg;
+    g.state = GameState.AwaitingPlayers;
+    g.lastUpdated = block.timestamp;
 
-    emit GameCreated(g.i.creator, s.numGames);
+    emit GameCreated(g.creator, s.numGames);
   }
 
-  function joinGame(uint gameId, uint tileId) external payable {
+  function joinGame(uint gameId, uint tileId, uint referralCode) external payable {
     (AppStorage storage s, Game storage g, Tile storage t) = LibGame.loadGameTile(gameId, tileId);
 
     address player = _msgSender();
@@ -54,29 +54,43 @@ contract GameFacet is MetaContext {
       revert GameTileAlreadyOwned(gameId, tileId);
     }
 
-    if (g.numTilesOwnedBy[player] == g.i.cfg.maxTilesPerPlayer) {
+    if (g.players[player].numTilesOwned == g.cfg.maxTilesPerPlayer) {
       revert GameMaxTilesPerPlayerReached(gameId, player);
     }
 
-    if (msg.value < g.i.cfg.tileCost) {
+    if (msg.value < g.cfg.tileCost) {
       revert InsufficientFundsToJoinGame(msg.value);
     }
 
-    g.i.numTilesOwned++;
+    // tile id
+    GamePlayer storage gp = g.players[player];
+    gp.numTilesOwned++;
+    gp.tilesByIndex[gp.numTilesOwned] = tileId;
+
+    // if this is the first tile then set the referer and referral code
+    // for subsequent tiles, it will use the already saved referer, thus preventing a player from using their own referral code
+    if (gp.numTilesOwned == 1) {
+      gp.referer = g.playersByReferralCode[referralCode];
+      gp.referralCode = uint(keccak256(abi.encodePacked(player, _msgData(), g.lastUpdated))) % 10000;
+      g.playersByReferralCode[referralCode] = player;
+    }
+
+    // apply fees
+    (uint finalAmount, ) = LibGame.calculateAndApplyFees(msg.value, g.creator, gp.referer);
+
+    g.numTilesOwned++;
     g.tiles[tileId] = Tile({
       id: tileId,
-      pot: msg.value,
+      pot: finalAmount,
       owner: player,
       potClaimed: false
     });
-    g.numTilesOwnedBy[player]++;
-    g.tileOwnedByIndex[player][g.numTilesOwnedBy[player]] = tileId;
 
-    if (g.i.numTilesOwned == g.i.cfg.numTiles) {
-      g.i.state = GameState.Started;
+    if (g.numTilesOwned == g.cfg.numTiles) {
+      g.state = GameState.Started;
     }
 
-    g.i.lastUpdated = block.timestamp;
+    g.lastUpdated = block.timestamp;
 
     emit GameJoined(gameId, tileId, player);
   }
@@ -89,27 +103,53 @@ contract GameFacet is MetaContext {
 
     LibGame.assertGameNotEndedOrCancelled(g);
 
-    if (g.i.lastUpdated + 30 days < block.timestamp) {
-      g.i.state = GameState.Cancelled;
-      g.i.lastUpdated = block.timestamp;
+    if (g.lastUpdated + 30 days < block.timestamp) {
+      g.state = GameState.Cancelled;
+      g.lastUpdated = block.timestamp;
     }
   }
 
   // Getters
 
-  function getGameNonMappingInfo(uint gameId) external view returns (GameNonMappingInfo memory) {
-    return LibAppStorage.diamondStorage().games[gameId].i;
+  function getGameNonMappingInfo(uint gameId) external view returns (
+    GameConfig memory cfg,
+    uint id,
+    address creator,
+    uint numTilesOwned,
+    GameState state,
+    uint lastUpdated,
+    bool transferLocked
+  ) {
+    (AppStorage storage s, Game storage g) = LibGame.loadGame(gameId);
+    cfg = g.cfg;
+    id = g.id;
+    creator = g.creator;
+    numTilesOwned = g.numTilesOwned;
+    state = g.state;
+    lastUpdated = g.lastUpdated;
+    transferLocked = g.transferLocked;
   }
 
   function getGameTile(uint gameId, uint tileId) external view returns (Tile memory) {
-    return LibAppStorage.diamondStorage().games[gameId].tiles[tileId];
+    (AppStorage storage s, Game storage g) = LibGame.loadGame(gameId);
+    return g.tiles[tileId];
   }
 
-  function getGameNumTilesOwnedByWallet(uint gameId, address owner) external view returns (uint) {
-    return LibAppStorage.diamondStorage().games[gameId].numTilesOwnedBy[owner];
+  function getGamePlayerNonMappingInfo(uint gameId, address player) external view returns (
+    uint numTilesOwned,
+    address referer,
+    uint referralCode
+  ) {
+    (AppStorage storage s, Game storage g) = LibGame.loadGame(gameId);
+    GamePlayer storage gp = g.players[player];
+    numTilesOwned = gp.numTilesOwned;
+    referer = gp.referer;
+    referralCode = gp.referralCode;
   }
 
-  function getIdOfGameTileOwnedByWalletAtIndex(uint gameId, address owner, uint index) external view returns (uint) {
-    return LibAppStorage.diamondStorage().games[gameId].tileOwnedByIndex[owner][index];
+  function getGamePlayerTileAtIndex(uint gameId, address player, uint index) external view returns (Tile memory) {
+    (AppStorage storage s, Game storage g) = LibGame.loadGame(gameId);
+    GamePlayer storage gp = g.players[player];
+    return g.tiles[gp.tilesByIndex[index]];
   }
 }

@@ -5,23 +5,31 @@ import { LibConstants } from "./LibConstants.sol";
 import { AppStorage, LibAppStorage } from "./LibAppStorage.sol";
 
 library LibSettings {
-  function getUint(bytes32 id) internal view returns (uint) {
-    return LibAppStorage.diamondStorage().settings.uints[id];
+  function getGameCreatorFeeBips() internal view returns (uint) {
+    return LibAppStorage.diamondStorage().settings.i[LibConstants.GAME_CREATOR_FEE_BIPS];
   }
 
-  function setUint(bytes32 id, uint val) internal {
-    LibAppStorage.diamondStorage().settings.uints[id] = val;
+  function getRefererFeeBips() internal view returns (uint) {
+    return LibAppStorage.diamondStorage().settings.i[LibConstants.REFERER_FEE_BIPS];
   }
 
-  function getAddress(bytes32 id) internal view returns (address) {
-    return LibAppStorage.diamondStorage().settings.addresses[id];
+  function getProjectFeeBips() internal view returns (uint) {
+    return LibAppStorage.diamondStorage().settings.i[LibConstants.PROJECT_FEE_BIPS];
   }
 
-  function setAddress(bytes32 id, address val) internal {
-    LibAppStorage.diamondStorage().settings.addresses[id] = val;
+  function getStakingFeeBips() internal view returns (uint) {
+    return LibAppStorage.diamondStorage().settings.i[LibConstants.STAKING_FEE_BIPS];
   }
 
-  function getAuthorizedSigner() internal view returns (address) {
-    return LibAppStorage.diamondStorage().settings.addresses[LibConstants.AUTHORIZED_SIGNER];
+  function getMosaicToken() internal view returns (address) {
+    return LibAppStorage.diamondStorage().settings.a[LibConstants.MOSAIC_TOKEN];
+  }
+
+  function getProjectWallet() internal view returns (address) {
+    return LibAppStorage.diamondStorage().settings.a[LibConstants.PROJECT_WALLET];
+  }
+
+  function getAuthorizedSignerWallet() internal view returns (address) {
+    return LibAppStorage.diamondStorage().settings.a[LibConstants.AUTHORIZED_SIGNER_WALLET];
   }
 }

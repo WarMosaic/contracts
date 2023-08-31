@@ -6,8 +6,8 @@ struct MetaTxContextStorage {
 }
 
 struct Settings {
-  mapping(bytes32 => address) addresses;
-  mapping(bytes32 => uint) uints;
+  mapping(bytes32 => address) a;
+  mapping(bytes32 => uint) i;
 }
 
 struct ERC20Token {
@@ -26,12 +26,6 @@ enum GameState {
   Cancelled
 }
 
-struct GameCreationConfig {
-  uint numTiles;
-  uint tileCost;
-  uint maxTilesPerPlayer;
-}
-
 struct Tile {
   uint id;
   uint pot;
@@ -39,24 +33,33 @@ struct Tile {
   bool potClaimed;
 }
 
-struct GameNonMappingInfo {
+struct GameConfig {
+  uint numTiles;
+  uint tileCost;
+  uint maxTilesPerPlayer;
+}
+
+struct GamePlayer {
+  uint numTilesOwned;
+  address referer;
+  uint referralCode;
+  mapping(uint => uint) tilesByIndex;
+}
+
+struct Game {
+  GameConfig cfg;
   uint id;
-  GameCreationConfig cfg;
   address creator;
   uint numTilesOwned;
   GameState state;
   uint lastUpdated;
   bool transferLocked;
-}
-
-struct Game {
-  GameNonMappingInfo i;
   mapping(uint => Tile) tiles;
-  mapping(address => uint) numTilesOwnedBy;
-  mapping(address => mapping(uint => uint)) tileOwnedByIndex;
+  mapping(address => GamePlayer) players;
+  mapping(uint => address) playersByReferralCode;
 }
 
-struct Player {
+struct User {
   uint balance;
 }
 

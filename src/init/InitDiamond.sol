@@ -19,14 +19,16 @@ contract InitDiamond {
     s.diamondInitialized = true;
 
     // initial settings
-    LibSettings.setUint(LibConstants.GAME_CREATOR_FEE_BIPS, 300); // 3%
-    LibSettings.setUint(LibConstants.REFERER_FEE_BIPS, 100); // 1%
-    LibSettings.setUint(LibConstants.PROJECT_FEE_BIPS, 100); // 1%
-    LibSettings.setUint(LibConstants.STAKING_FEE_BIPS, 100); // 5%
+    s.settings.i[LibConstants.GAME_CREATOR_FEE_BIPS] = 300; // 2%
+    s.settings.i[LibConstants.REFERER_FEE_BIPS] = 100; // 2%
+    s.settings.i[LibConstants.PROJECT_FEE_BIPS] = 100; // 1%
+    s.settings.i[LibConstants.STAKING_FEE_BIPS] = 100; // 5%
+    s.settings.a[LibConstants.AUTHORIZED_SIGNER_WALLET] = msg.sender;
+    s.settings.a[LibConstants.PROJECT_WALLET] = msg.sender;
 
     // deploy erc20 token
     address token = LibERC20.deployToken("WarMosaic", "MOSAIC");
-    LibSettings.setAddress(LibConstants.MOSAIC_TOKEN, token);
+    s.settings.a[LibConstants.MOSAIC_TOKEN] = msg.sender;
 
     emit InitializeDiamond(msg.sender);
   }

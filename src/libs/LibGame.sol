@@ -3,6 +3,7 @@ pragma solidity >=0.8.21;
 
 import "../shared/Structs.sol";
 import { AppStorage, LibAppStorage } from "./LibAppStorage.sol";
+import { LibSettings } from "./LibSettings.sol";
 
 error InvalidGame(uint gameId);
 error InvalidGameTile(uint gameId, uint tileId);
@@ -16,20 +17,20 @@ library LibGame {
   }
 
   function assertGameState(Game storage g, GameState state) internal view {
-    if (g.i.state != state) {
-      revert GameInWrongState(g.i.id);
+    if (g.state != state) {
+      revert GameInWrongState(g.id);
     }
   }
 
   function assertGameNotEndedOrCancelled(Game storage g) internal view {
-    if (g.i.state == GameState.Ended || g.i.state == GameState.Cancelled) {
-      revert GameInWrongState(g.i.id);
+    if (g.state == GameState.Ended || g.state == GameState.Cancelled) {
+      revert GameInWrongState(g.id);
     }
   }
 
   function assertGameTileId(Game storage g, uint tileId) internal view {
-    if (tileId < 1 || tileId > g.i.cfg.numTiles) {
-      revert InvalidGameTile(g.i.id, tileId);
+    if (tileId < 1 || tileId > g.cfg.numTiles) {
+      revert InvalidGameTile(g.id, tileId);
     }
   }
 
@@ -51,5 +52,32 @@ library LibGame {
 
   function updateQuadStatus(AppStorage storage s, Game storage g, Tile storage t) internal {
 
+  }
+
+  function calculateAndApplyFees(uint amount, address creator, address referer) internal returns (uint amountMinusFees, uint totalFees) {
+    AppStorage storage s = LibAppStorage.diamondStorage();
+    Settings storage settings = s.settings;
+
+    uint creatorFeeAmount = (amount * LibSettings.getGameCreatorFeeBips()) / 10000;
+    uint refererFeeAmount = (amount * LibSettings.getRefererFeeBips()) / 10000;
+    uint projectFeeAmount = (amount * LibSettings.getProjectFeeBips()) / 10000;
+    totalFees = creatorFeeAmount + refererFeeAmount + projectFeeAmount;
+    amountMinusFees = amount - totalFees;
+
+    address projectWallet = LibSettings.getProjectWallet();
+
+    if (referer != address(0)) {
+      s.users[creator].balance += creatorFeeAmount;
+    } else {
+      s.users[projectWallet].balance += creatorFeeAmount;
+    }
+
+    if (referer != address(0)) {
+      s.users[referer].balance += refererFeeAmount;
+    } else {
+      s.users[projectWallet].balance += refererFeeAmount;
+    }
+
+    s.users[projectWallet].balance += projectFeeAmount;
   }
 }

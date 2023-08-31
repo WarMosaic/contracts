@@ -14,7 +14,7 @@ library LibSignature {
   }
 
   function assertByAuthorizedSigner(bytes32 sigHash, bytes memory signature) internal {
-    address signer = LibSettings.getAuthorizedSigner();
+    address signer = LibSettings.getAuthorizedSignerWallet();
     LibSignature.assertBySigner(sigHash, signature, signer, "auth");
   }
 }

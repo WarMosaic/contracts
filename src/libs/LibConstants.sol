@@ -23,7 +23,11 @@ library LibConstants {
    */
   bytes32 internal constant MOSAIC_TOKEN = keccak256("mosaic.token");
   /**
-   * @dev Address of authorizing signatory (usually the server).
+   * @dev Address of project wallet.
    */
-  bytes32 internal constant AUTHORIZED_SIGNER = keccak256("authorized.signer");
+  bytes32 internal constant PROJECT_WALLET = keccak256("project.wallet");
+  /**
+   * @dev Address of authorizing signatory wallet (usually the server).
+   */
+  bytes32 internal constant AUTHORIZED_SIGNER_WALLET = keccak256("authorized.signer.wallet");
 }
