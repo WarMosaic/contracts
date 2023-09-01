@@ -24,9 +24,12 @@ contract GameplayFacet is MetaContext {
 
       LibGame.assertGameTileId(g, tileId);
 
-      g.tiles[tileId].owner = owner;
+      Tile storage t = g.tiles[tileId];
 
-      LibGame.tryAndClaimQuad(s, g, g.tiles[tileId]);
+      if (t.owner != owner) {
+        LibGame.transferTile(g, t, owner);
+        LibGame.tryAndClaimQuad(s, g, g.tiles[tileId]);
+      }
     }
 
     g.lastUpdated = block.timestamp;

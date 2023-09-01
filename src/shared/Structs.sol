@@ -1,6 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
+struct UintList {
+  mapping(uint => uint) reverseMap;
+  mapping(uint => uint) list;
+  uint len;
+}
+
 struct MetaTxContextStorage {
   address trustedForwarder;
 }
@@ -19,11 +25,16 @@ struct ERC20Token {
   uint256 totalSupply;
 }
 
+enum FeeType {
+  Joining,
+  Trading
+}
+
 enum GameState {
   AwaitingPlayers,
   Started,
   Ended,
-  Cancelled
+  TimedOut
 }
 
 struct Tile {
@@ -40,10 +51,11 @@ struct GameConfig {
 }
 
 struct GamePlayer {
-  uint numTilesOwned;
   address referer;
   uint referralCode;
-  mapping(uint => uint) tilesByIndex;
+  uint claimableReward;
+  uint numTilesOwned;
+  UintList tilesOwned;
 }
 
 struct Game {
@@ -63,4 +75,3 @@ struct Game {
 struct User {
   uint balance;
 }
-

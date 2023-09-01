@@ -3,21 +3,29 @@ pragma solidity >=0.8.21;
 
 library LibConstants {
   /**
-   * @dev Percentage of the tile cost and trading price that goes to the project.
+   * @dev Percentage of the tile cost that goes to the project.
    */
-  bytes32 internal constant PROJECT_FEE_BIPS = keccak256("project.fee.bips");
+  bytes32 internal constant JOINING_PROJECT_FEE_BIPS = keccak256("project.fee.bips");
   /**
-   * @dev Percentage of the tile cost and trading price that goes to the game creator.
+   * @dev Percentage of the tile cost that goes to the game creator.
    */
-  bytes32 internal constant GAME_CREATOR_FEE_BIPS = keccak256("creator.fee.bips");
+  bytes32 internal constant JOINING_GAME_CREATOR_FEE_BIPS = keccak256("creator.fee.bips");
   /**
-   * @dev Percentage of the tile cost and trading price that goes to the referer.
+   * @dev Percentage of the tile cost that goes to the referer.
    */
-  bytes32 internal constant REFERER_FEE_BIPS = keccak256("referer.fee.bips");
+  bytes32 internal constant JOINING_REFERER_FEE_BIPS = keccak256("referer.fee.bips");
   /**
-   * @dev Percentage of the tile cost and trading price that goes to the staking pool.
+   * @dev Percentage of the trading price that goes to the project.
    */
-  bytes32 internal constant STAKING_FEE_BIPS = keccak256("liquidity.fee.bips");
+  bytes32 internal constant TRADING_PROJECT_FEE_BIPS = keccak256("project.fee.bips");
+  /**
+   * @dev Percentage of the trading price that goes to the game creator.
+   */
+  bytes32 internal constant TRADING_GAME_CREATOR_FEE_BIPS = keccak256("creator.fee.bips");
+  /**
+   * @dev Percentage of the trading price that goes to the referer.
+   */
+  bytes32 internal constant TRADING_REFERER_FEE_BIPS = keccak256("referer.fee.bips");
   /**
    * @dev Address of MOSAIC token.
    */

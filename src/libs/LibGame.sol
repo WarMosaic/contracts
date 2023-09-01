@@ -4,12 +4,15 @@ pragma solidity >=0.8.21;
 import "../shared/Structs.sol";
 import { AppStorage, LibAppStorage } from "./LibAppStorage.sol";
 import { LibSettings } from "./LibSettings.sol";
+import { LibUintList } from "./LibUintList.sol";
 
 error InvalidGame(uint gameId);
 error InvalidGameTile(uint gameId, uint tileId);
 error GameInWrongState(uint gameId);
 
 library LibGame {
+  using LibUintList for UintList;
+
   event QuadClaimed(uint gameId, uint tileId, address player);
 
   function assertGameId(AppStorage storage s, uint gameId) internal view {
@@ -24,8 +27,14 @@ library LibGame {
     }
   }
 
-  function assertGameNotEndedOrCancelled(Game storage g) internal view {
-    if (g.state == GameState.Ended || g.state == GameState.Cancelled) {
+  function assertGameIsOver(Game storage g) internal view {
+    if (g.state != GameState.Ended && g.state != GameState.TimedOut) {
+      revert GameInWrongState(g.id);
+    }
+  }
+
+  function assertGameIsActive(Game storage g) internal view {
+    if (g.state == GameState.Ended || g.state == GameState.TimedOut) {
       revert GameInWrongState(g.id);
     }
   }
@@ -48,30 +57,34 @@ library LibGame {
     tile = game.tiles[tileId];
   }
 
-  function updateTileOnwer(Tile storage t, address newOwner) internal {
+  function transferTile(Game storage g, Tile storage t, address newOwner) internal {
+    // remove from current owner
+    g.players[t.owner].numTilesOwned--;
+    g.players[t.owner].tilesOwned.remove(t.id);
+
+    // add to new owner
+    g.players[newOwner].numTilesOwned++;
+    g.players[newOwner].tilesOwned.add(t.id);
+
+    // update tile prop
     t.owner = newOwner;
   }
 
-  function calculateAndApplyFees(uint amount, address creator, address referer) internal returns (uint amountMinusFees, uint totalFees) {
+  function calculateAndApplyFeesForGame(Game storage g, FeeType feeType, uint amount, address referer) internal returns (uint amountMinusFees, uint totalFees) {
     AppStorage storage s = LibAppStorage.diamondStorage();
-    Settings storage settings = s.settings;
 
-    uint creatorFeeAmount = (amount * LibSettings.getGameCreatorFeeBips()) / 10000;
-    uint refererFeeAmount = (amount * LibSettings.getRefererFeeBips()) / 10000;
-    uint projectFeeAmount = (amount * LibSettings.getProjectFeeBips()) / 10000;
+    uint creatorFeeAmount = (amount * LibSettings.getGameCreatorFeeBips(feeType)) / 10000;
+    uint refererFeeAmount = (amount * LibSettings.getRefererFeeBips(feeType)) / 10000;
+    uint projectFeeAmount = (amount * LibSettings.getProjectFeeBips(feeType)) / 10000;
     totalFees = creatorFeeAmount + refererFeeAmount + projectFeeAmount;
     amountMinusFees = amount - totalFees;
 
     address projectWallet = LibSettings.getProjectWallet();
 
-    if (referer != address(0)) {
-      s.users[creator].balance += creatorFeeAmount;
-    } else {
-      s.users[projectWallet].balance += creatorFeeAmount;
-    }
+    g.players[g.creator].claimableReward += creatorFeeAmount;
 
     if (referer != address(0)) {
-      s.users[referer].balance += refererFeeAmount;
+      g.players[referer].claimableReward += refererFeeAmount;
     } else {
       s.users[projectWallet].balance += refererFeeAmount;
     }
@@ -102,7 +115,7 @@ library LibGame {
         Tile storage quadTile = g.tiles[i];
         quadTile.potClaimed = true;
         // transfer pot to owner
-        s.users[quadTile.owner].balance += quadTile.pot;
+        g.players[quadTile.owner].claimableReward += quadTile.pot;
       }
 
       emit QuadClaimed(g.id, quadStartId, t.owner);

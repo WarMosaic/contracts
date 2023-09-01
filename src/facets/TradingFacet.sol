@@ -7,6 +7,7 @@ import { LibSignature } from "../libs/LibSignature.sol";
 import { LibGame } from "../libs/LibGame.sol";
 import { MetaContext } from "../shared/MetaContext.sol";
 
+error InvalidTrade(uint gameId, uint tileId);
 error InsufficientFundsToBuy(uint amount);
 
 contract TradingFacet is MetaContext {
@@ -17,7 +18,11 @@ contract TradingFacet is MetaContext {
     
     LibGame.assertGameState(g, GameState.Started);
 
-    bytes32 sigHash = keccak256(abi.encode(gameId, tileId, buyerAddress, amount));
+    if (t.owner == buyerAddress) {
+      revert InvalidTrade(gameId, tileId);
+    }
+
+    bytes32 sigHash = keccak256(abi.encode(gameId, tileId, t.owner, amount));
     LibSignature.assertByAuthorizedSigner(sigHash, authSig);
     LibSignature.assertBySigner(sigHash, sellerSig, t.owner, "seller");
     LibSignature.assertBySigner(sigHash, buyerSig, buyerAddress, "buyer");
@@ -29,11 +34,11 @@ contract TradingFacet is MetaContext {
 
     {
       // new owner
-      t.owner = buyerAddress;
+      LibGame.transferTile(g, t, buyerAddress);
       
       // money transfer
       buyer.balance -= amount;
-      (uint finalAmount, ) = LibGame.calculateAndApplyFees(amount, g.creator, g.players[t.owner].referer);
+      (uint finalAmount, ) = LibGame.calculateAndApplyFeesForGame(g, FeeType.Trading, amount, g.players[t.owner].referer);
       s.users[t.owner].balance += finalAmount;
 
       LibGame.tryAndClaimQuad(s, g, t);

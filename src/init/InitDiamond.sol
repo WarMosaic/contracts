@@ -18,11 +18,17 @@ contract InitDiamond {
     }
     s.diamondInitialized = true;
 
-    // initial settings
-    s.settings.i[LibConstants.GAME_CREATOR_FEE_BIPS] = 300; // 2%
-    s.settings.i[LibConstants.REFERER_FEE_BIPS] = 100; // 2%
-    s.settings.i[LibConstants.PROJECT_FEE_BIPS] = 100; // 1%
-    s.settings.i[LibConstants.STAKING_FEE_BIPS] = 100; // 5%
+    // joining fees
+    s.settings.i[LibConstants.JOINING_GAME_CREATOR_FEE_BIPS] = 200; // 2%
+    s.settings.i[LibConstants.JOINING_REFERER_FEE_BIPS] = 300; // 3%
+    s.settings.i[LibConstants.JOINING_PROJECT_FEE_BIPS] = 500; // 5%
+
+    // trading fees
+    s.settings.i[LibConstants.TRADING_GAME_CREATOR_FEE_BIPS] = 100; // 1%
+    s.settings.i[LibConstants.TRADING_REFERER_FEE_BIPS] = 100; // 1%
+    s.settings.i[LibConstants.TRADING_PROJECT_FEE_BIPS] = 200; // 2%
+
+    // wallets
     s.settings.a[LibConstants.AUTHORIZED_SIGNER_WALLET] = msg.sender;
     s.settings.a[LibConstants.PROJECT_WALLET] = msg.sender;
 
