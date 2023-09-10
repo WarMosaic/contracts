@@ -11,7 +11,7 @@ jobs:
       packages: write
     timeout-minutes: 15
     container:
-      image: ghcr.io/degenfighter/contracts-builder:latest
+      image: ghcr.io/WarMosaic/contracts-builder:latest
     steps:
       - uses: actions/checkout@v3
         with:
@@ -24,7 +24,6 @@ jobs:
         with:
           version: 8
       - run: echo "/root/.cargo/bin:/root/.foundry/bin" >> $GITHUB_PATH
-      - run: svm install 0.8.21 && svm use 0.8.21
       - run: forge install
       - run: pnpm i
       - run: pnpm build
