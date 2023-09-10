@@ -34,7 +34,7 @@ contract InitDiamond {
 
     // deploy erc20 token
     address token = LibERC20.deployToken("WarMosaic", "MOSAIC");
-    s.settings.a[LibConstants.MOSAIC_TOKEN] = msg.sender;
+    s.settings.a[LibConstants.MOSAIC_TOKEN] = token;
 
     emit InitializeDiamond(msg.sender);
   }
