@@ -1,3 +1,5 @@
+[![ci](https://github.com/WarMosaic/contracts/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/WarMosaic/contracts/actions/workflows/ci.yml)
+
 # WarMosaic contracts
 
 The EVM smart contracts for [WarMosaic](https://warmosaic.com).
