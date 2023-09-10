@@ -11,7 +11,7 @@ jobs:
       packages: write
     timeout-minutes: 15
     container:
-      image: ghcr.io/WarMosaic/contracts-builder:latest
+      image: ghcr.io/warmosaic/contracts-builder:latest
     steps:
       - uses: actions/checkout@v3
         with:
