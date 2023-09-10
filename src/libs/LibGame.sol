@@ -103,21 +103,21 @@ library LibGame {
   }
 
   function tryAndClaimQuad(Game storage g, Tile storage t) private {
-    // work out quad this tile belongs to
-    uint quadStartId = ((t.id - 1) / 4) * 4 + 1;
-    uint quadEndId = quadStartId + 3;
-
-    for (uint i = quadStartId; i <= quadEndId; i++) {
-      Tile storage quadTile = g.tiles[i];
-      
-      if (quadTile.owner != t.owner) {
-        return;
-      }
-    }
-
-    // if we get here then all tiles in the quad are owned by the same player
-    // if quad is not already claimed then claim it
+    // if quad is not already claimed then try and claim it
     if (!t.potClaimed) {
+      // work out quad this tile belongs to
+      uint quadStartId = ((t.id - 1) / 4) * 4 + 1;
+      uint quadEndId = quadStartId + 3;
+
+      for (uint i = quadStartId; i <= quadEndId; i++) {
+        Tile storage quadTile = g.tiles[i];
+        
+        if (quadTile.owner != t.owner) {
+          return;
+        }
+      }
+
+      // if we get here then all tiles in the quad are owned by the same player
       g.numTilesPotsClaimed += 4;
 
       for (uint i = quadStartId; i <= quadEndId; i++) {
