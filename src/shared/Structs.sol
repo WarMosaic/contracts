@@ -38,10 +38,10 @@ enum GameState {
 }
 
 struct Tile {
-  uint id;
-  uint pot;
+  uint16 id;    // struct packing, since id cannot exceed 1,024.
   address owner;
   bool potClaimed;
+  uint pot;
 }
 
 struct GameConfig {

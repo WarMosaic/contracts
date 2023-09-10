@@ -59,8 +59,10 @@ library LibERC20 {
       revert ERC20NotEnoughBalance(from);
     }
 
-    t.balances[from] -= amount;
-    t.balances[to] += amount;
+    unchecked {
+      t.balances[from] -= amount;
+      t.balances[to] += amount;      
+    }
 
     emit ERC20Transferred(token, from, to, amount);
   }
@@ -92,8 +94,10 @@ library LibERC20 {
     if (t.balances[from] < amount) {
       revert ERC20NotEnoughBalance(from);
     }
-    t.totalSupply -= amount;
-    t.balances[from] -= amount;
+    unchecked {
+      t.totalSupply -= amount;
+      t.balances[from] -= amount;
+    }
 
     emit ERC20Burned(token, from, amount);
   }  

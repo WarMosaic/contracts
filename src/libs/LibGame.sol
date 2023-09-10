@@ -59,8 +59,11 @@ library LibGame {
 
   function transferTile(Game storage g, Tile storage t, address newOwner) internal {
     // remove from current owner
-    g.players[t.owner].numTilesOwned--;
-    g.players[t.owner].tilesOwned.remove(t.id);
+    // prevent Arithmetic underflow for first time owner
+    if(t.owner != address(0)) {
+      g.players[t.owner].numTilesOwned--;
+      g.players[t.owner].tilesOwned.remove(t.id);
+    }
 
     // add to new owner
     g.players[newOwner].numTilesOwned++;

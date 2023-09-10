@@ -69,7 +69,7 @@ contract GameFacet is MetaContext {
     emit GameCreated(g.creator, s.numGames);
   }
 
-  function joinGame(uint gameId, uint tileId, uint referralCode) external payable {
+  function joinGame(uint gameId, uint16 tileId, uint referralCode) external payable {
     (AppStorage storage s, Game storage g, Tile storage t) = LibGame.loadGameTile(gameId, tileId);
 
     address player = _msgSender();
@@ -173,7 +173,7 @@ contract GameFacet is MetaContext {
     transferLocked = g.transferLocked;
   }
 
-  function getGameTile(uint gameId, uint tileId) external view returns (Tile memory) {
+  function getGameTile(uint gameId, uint16 tileId) external view returns (Tile memory) {
     (AppStorage storage s, Game storage g) = LibGame.loadGame(gameId);
     return g.tiles[tileId];
   }
