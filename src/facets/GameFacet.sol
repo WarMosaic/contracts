@@ -158,6 +158,7 @@ contract GameFacet is MetaContext {
     GameConfig memory cfg,
     uint id,
     address creator,
+    address winner,
     uint numTilesOwned,
     GameState state,
     uint lastUpdated,
@@ -167,6 +168,7 @@ contract GameFacet is MetaContext {
     cfg = g.cfg;
     id = g.id;
     creator = g.creator;
+    winner = g.winner;
     numTilesOwned = g.numTilesOwned;
     state = g.state;
     lastUpdated = g.lastUpdated;

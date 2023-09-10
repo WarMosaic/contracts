@@ -26,7 +26,7 @@ contract TestGameFacet is TestBaseContract {
     function test_CreateGame() external {
         diamond.createGame(cfg);
 
-        (, uint id, address creator,,GameState state,,) = diamond.getGameNonMappingInfo(1);
+        (, uint id, address creator,,,GameState state,,) = diamond.getGameNonMappingInfo(1);
         assertEq(id, 1);
         assertEq(uint(state), uint(GameState.AwaitingPlayers));
         assertEq(creator, account0);
@@ -61,7 +61,7 @@ contract TestGameFacet is TestBaseContract {
             vm.stopPrank();
         }
 
-        (, uint id, address creator,, GameState state,,) = diamond.getGameNonMappingInfo(1);
+        (, uint id, address creator,,, GameState state,,) = diamond.getGameNonMappingInfo(1);
         assertEq(id, 1);
         assertEq(creator, account0);
         assertEq(uint(state), uint(GameState.Started));

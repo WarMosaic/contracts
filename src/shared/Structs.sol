@@ -62,6 +62,7 @@ struct Game {
   GameConfig cfg;
   uint id;
   address creator;
+  address winner;
   uint numTilesOwned;
   uint numTilesPotsClaimed;
   GameState state;

@@ -14,6 +14,7 @@ library LibGame {
   using LibUintList for UintList;
 
   event QuadClaimed(uint gameId, uint tileId, address player);
+  event GameOver(uint gameId, address winner);
 
   function assertGameId(AppStorage storage s, uint gameId) internal view {
     if (gameId < 1 || gameId > s.numGames) {
@@ -71,6 +72,12 @@ library LibGame {
 
     // update tile prop
     t.owner = newOwner;
+
+    // post-processing
+    if (g.state == GameState.Started) {
+      tryAndClaimQuad(g, t);
+      tryAndEndGame(g, newOwner);
+    }
   }
 
   function calculateAndApplyFeesForGame(Game storage g, FeeType feeType, uint amount, address referer) internal returns (uint amountMinusFees, uint totalFees) {
@@ -95,7 +102,7 @@ library LibGame {
     s.users[projectWallet].balance += projectFeeAmount;
   }
 
-  function tryAndClaimQuad(AppStorage storage s, Game storage g, Tile storage t) internal {
+  function tryAndClaimQuad(Game storage g, Tile storage t) private {
     // work out quad this tile belongs to
     uint quadStartId = ((t.id - 1) / 4) * 4 + 1;
     uint quadEndId = quadStartId + 3;
@@ -121,6 +128,15 @@ library LibGame {
       }
 
       emit QuadClaimed(g.id, quadStartId, t.owner);
+    }
+  }
+
+  function tryAndEndGame(Game storage g, address possibleWinner) private {
+    if (g.players[possibleWinner].numTilesOwned == g.cfg.numTiles) {
+      g.state = GameState.Ended;
+      g.winner = possibleWinner;
+      g.lastUpdated = block.timestamp;
+      emit GameOver(g.id, possibleWinner);
     }
   }
 }

@@ -35,13 +35,11 @@ contract TradingFacet is MetaContext {
     {
       // new owner
       LibGame.transferTile(g, t, buyerAddress);
-      
+
       // money transfer
       buyer.balance -= amount;
       (uint finalAmount, ) = LibGame.calculateAndApplyFeesForGame(g, FeeType.Trading, amount, g.players[t.owner].referer);
       s.users[t.owner].balance += finalAmount;
-
-      LibGame.tryAndClaimQuad(s, g, t);
 
       g.lastUpdated = block.timestamp;
     }

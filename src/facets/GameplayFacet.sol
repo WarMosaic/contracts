@@ -28,7 +28,6 @@ contract GameplayFacet is MetaContext {
 
       if (t.owner != owner) {
         LibGame.transferTile(g, t, owner);
-        LibGame.tryAndClaimQuad(s, g, g.tiles[tileId]);
       }
     }
 
