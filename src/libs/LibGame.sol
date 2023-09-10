@@ -100,10 +100,9 @@ library LibGame {
     uint quadStartId = ((t.id - 1) / 4) * 4 + 1;
     uint quadEndId = quadStartId + 3;
 
-    uint potsClaimed = 0;
-
     for (uint i = quadStartId; i <= quadEndId; i++) {
       Tile storage quadTile = g.tiles[i];
+      
       if (quadTile.owner != t.owner) {
         return;
       }
