@@ -9,7 +9,9 @@ import { LibDiamondHelper } from "src/generated/LibDiamondHelper.sol";
 import { InitDiamond } from "src/init/InitDiamond.sol";
 
 abstract contract TestBaseContract is Test {
-  address public immutable account0 = address(this);
+  // use private key to enable signing with account0 (Auth Account)
+  uint account0_Key = 0xaa;
+  address public immutable account0 = vm.addr(account0_Key);
   address public account1;
   address public account2;
 
@@ -21,7 +23,7 @@ abstract contract TestBaseContract is Test {
     console2.log("Test contract address, aka account0", address(this));
     console2.log("msg.sender during setup", msg.sender);
 
-    vm.label(account0, "Account 0");
+    vm.label(account0, "Auth Account");
     account1 = vm.addr(1);
     vm.label(account1, "Account 1");
     account2 = vm.addr(2);
@@ -33,6 +35,7 @@ abstract contract TestBaseContract is Test {
     console2.log("Cut and init");
     IDiamondCut.FacetCut[] memory cut = LibDiamondHelper.deployFacetsAndGetCuts();
     InitDiamond init = new InitDiamond();
+    vm.prank(account0);
     diamond.diamondCut(cut, address(init), abi.encodeWithSelector(init.init.selector));
   }
 }

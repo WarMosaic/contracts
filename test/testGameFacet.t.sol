@@ -2,7 +2,6 @@ pragma solidity ^0.8.21;
 
 import {TestBaseContract} from "./utils/TestBaseContract.sol";
 import "forge-std/Test.sol";
-import { AppStorage, LibAppStorage } from "../src/libs/LibAppStorage.sol";
 import {GameConfig} from "../src/shared/Structs.sol";
 import "../src/facets/GameFacet.sol";
 
@@ -24,9 +23,10 @@ contract TestGameFacet is TestBaseContract {
     }
 
     function test_CreateGame() external {
+        vm.prank(account0);
         diamond.createGame(cfg);
 
-        (, uint id, address creator,,,GameState state,,) = diamond.getGameNonMappingInfo(1);
+        (,uint id, address creator,,,GameState state,,) = diamond.getGameNonMappingInfo(1);
         assertEq(id, 1);
         assertEq(uint(state), uint(GameState.AwaitingPlayers));
         assertEq(creator, account0);
@@ -44,7 +44,8 @@ contract TestGameFacet is TestBaseContract {
         diamond.createGame(cfg);
     }
 
-    function test_joinGame() external {
+    function test_JoinGame() external {
+        vm.startPrank(account0);
         address[] memory players = new address[](4);
         players[0] = account0;
         players[1] = account1;
@@ -61,10 +62,9 @@ contract TestGameFacet is TestBaseContract {
             vm.stopPrank();
         }
 
-        (, uint id, address creator,,, GameState state,,) = diamond.getGameNonMappingInfo(1);
+        (,uint id, address creator,,,GameState state,,) = diamond.getGameNonMappingInfo(1);
         assertEq(id, 1);
         assertEq(creator, account0);
         assertEq(uint(state), uint(GameState.Started));
     }
-
 }
