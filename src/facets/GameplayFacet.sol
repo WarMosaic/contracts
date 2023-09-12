@@ -5,15 +5,21 @@ import "../shared/Structs.sol";
 import { AppStorage, LibAppStorage } from "../libs/LibAppStorage.sol";
 import { LibSignature } from "../libs/LibSignature.sol";
 import { LibGame } from "../libs/LibGame.sol";
+import { LibSettings } from "../libs/LibSettings.sol";
+import { LibErrors } from "../libs/LibErrors.sol";
 import { MetaContext } from "../shared/MetaContext.sol";
 
 error LengthMismatch();
+
 contract GameplayFacet is MetaContext {
   event TileOwnershipsUpdated(uint gameId);
 
   function updateTileOwners(uint gameId, uint[] calldata tileIds, address[] calldata newOwners, bytes calldata authSig) external {
     if(tileIds.length != newOwners.length) {
       revert LengthMismatch();
+    }
+    if(_msgSender() != LibSettings.getAuthorizedSignerWallet()) {
+      revert LibErrors.AuthFailed();
     }
     (AppStorage storage s, Game storage g) = LibGame.loadGame(gameId);
 
