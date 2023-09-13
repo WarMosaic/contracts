@@ -7,13 +7,9 @@ import {LibErrors} from "../src/libs/LibErrors.sol";
 
 contract TestGamePlayFacet is TestBaseContract {
     GameConfig cfg;
-    address account3;
-    address account4;
 
     function setUp() public override {
         super.setUp();
-        account3 = vm.addr(3);
-        account4 = vm.addr(4);
 
         cfg = GameConfig({
             numTiles: 16,
@@ -49,11 +45,12 @@ contract TestGamePlayFacet is TestBaseContract {
         _tileIds[1] = 3;
         _tileIds[2] = 4;
 
-        bytes32 _hash = compute_hash(1, _tileIds, _newOwners);
+        uint _deadline = block.timestamp;
+        bytes32 _hash = compute_hash(1, _tileIds, _newOwners, _deadline);
         bytes memory _authSig = compute_sig(_hash);
 
         vm.prank(account0);     // account0 is Authorized Signer.
-        diamond.updateTileOwners(1, _tileIds, _newOwners, _authSig);
+        diamond.updateTileOwners(1, _tileIds, _newOwners, _deadline, _authSig);
 
         // check that tile owners were updated
         assertEq(diamond.getGameTile(1,1).owner, _player1);
@@ -86,11 +83,12 @@ contract TestGamePlayFacet is TestBaseContract {
             _tileIds[i] = i+1;
         }
 
-        bytes32 _hash = compute_hash(1, _tileIds, _newOwners);
+        uint _deadline = block.timestamp;
+        bytes32 _hash = compute_hash(1, _tileIds, _newOwners, _deadline);
         bytes memory _authSig = compute_sig(_hash);
 
         vm.prank(account0);
-        diamond.updateTileOwners(1, _tileIds, _newOwners, _authSig);
+        diamond.updateTileOwners(1, _tileIds, _newOwners, _deadline, _authSig);
 
         (,uint id, address creator,,,GameState state,,) = diamond.getGameNonMappingInfo(1);
         assertEq(id, 1);
@@ -121,12 +119,12 @@ contract TestGamePlayFacet is TestBaseContract {
         _tileIds[0] = 6;
         _tileIds[1] = 7;
         _tileIds[2] = 8;
-
-        bytes32 _hash = compute_hash(1, _tileIds, _newOwners);
+        // set a deadline far in the future
+        uint _deadline = block.timestamp + 60 seconds;
+        bytes32 _hash = compute_hash(1, _tileIds, _newOwners, _deadline);
         bytes memory _authSig = compute_sig(_hash);
 
-        vm.startPrank(account0);     // account0 is Authorized Signer.
-        diamond.updateTileOwners(1, _tileIds, _newOwners, _authSig);
+        diamond.updateTileOwners(1, _tileIds, _newOwners, _deadline, _authSig);
 
         // check that tile owners were updated
         assertEq(diamond.getGameTile(1,1).owner, _player1);
@@ -138,23 +136,22 @@ contract TestGamePlayFacet is TestBaseContract {
         address _player2 = players[1];
         address[] memory _newOwners2 = _get_same_players(3, _player2);
 
-        bytes32 _hash2 = compute_hash(1, _tileIds, _newOwners2);
+        bytes32 _hash2 = compute_hash(1, _tileIds, _newOwners2, _deadline);
         bytes memory _authSig2 = compute_sig(_hash2);
-        diamond.updateTileOwners(1, _tileIds, _newOwners2, _authSig2);
+        diamond.updateTileOwners(1, _tileIds, _newOwners2, _deadline, _authSig2);
         // check that tile owners were updated for player2
         assertEq(diamond.getGameTile(1,6).owner, _player2);
         assertEq(diamond.getGameTile(1,7).owner, _player2);
         assertEq(diamond.getGameTile(1,8).owner, _player2);
-        vm.stopPrank();
 
-        // signature replay from unauthorized player1 should revert
+        // signature replay attempt from player1 should revert
         vm.prank(_player1);
-        vm.expectRevert(LibErrors.AuthFailed.selector);
-        diamond.updateTileOwners(1, _tileIds, _newOwners, _authSig);
+        vm.expectRevert(LibErrors.InvalidatedSigHash.selector);
+        diamond.updateTileOwners(1, _tileIds, _newOwners, _deadline, _authSig);
     }
 
-    function compute_hash(uint gameId_, uint[] memory tileIds_, address[] memory newOwners_) internal pure returns(bytes32 hash) {
-        hash = keccak256(abi.encode(gameId_, tileIds_, newOwners_));
+    function compute_hash(uint gameId_, uint[] memory tileIds_, address[] memory newOwners_, uint deadline_) internal pure returns(bytes32 hash) {
+        hash = keccak256(abi.encode(gameId_, tileIds_, newOwners_, deadline_));
     }
 
     function compute_sig(bytes32 hash_) internal view returns(bytes memory) {
@@ -162,14 +159,14 @@ contract TestGamePlayFacet is TestBaseContract {
         return abi.encodePacked(r, s, v);
     }
 
-    function _get_same_players(uint len, address elem) internal returns(address[] memory _array) {
+    function _get_same_players(uint len, address elem) internal pure returns(address[] memory _array) {
         _array = new address[](len);
         for(uint i=0; i<len; ++i) {
             _array[i] = elem;
         }
     }
 
-    function _get_players(uint playerCount) internal returns(address[] memory _players) {
+    function _get_players(uint playerCount) internal pure returns(address[] memory _players) {
         _players = new address[](playerCount);
         for(uint i=0; i<playerCount; ++i) {
             _players[i] = vm.addr(0xff + i);
