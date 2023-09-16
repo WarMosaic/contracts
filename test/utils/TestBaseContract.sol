@@ -10,8 +10,8 @@ import { InitDiamond } from "src/init/InitDiamond.sol";
 
 abstract contract TestBaseContract is Test {
   // use private key to enable signing with account0 (Auth Account)
-  uint account0_Key = 0xaa;
-  address public immutable account0 = vm.addr(account0_Key);
+  uint authAccountKey = 0xaa;
+  address public immutable account0 = vm.addr(authAccountKey);
   address public account1;
   address public account2;
 
@@ -38,4 +38,16 @@ abstract contract TestBaseContract is Test {
     vm.prank(account0);
     diamond.diamondCut(cut, address(init), abi.encodeWithSelector(init.init.selector));
   }
+
+  function _get_players(uint playerCount) internal pure returns(address[] memory _players) {
+    _players = new address[](playerCount);
+    for(uint i=0; i<playerCount; ++i) {
+        _players[i] = vm.addr(0xff + i);
+    }
+}
+
+function _compute_sig(bytes32 hash_, uint key) internal view returns(bytes memory) {
+    (uint8 v, bytes32 r, bytes32 s) = vm.sign(key, hash_);
+    return abi.encodePacked(r, s, v);
+}
 }

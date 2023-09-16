@@ -22,7 +22,6 @@ contract GameplayFacet is MetaContext {
 
     bytes32 sigHash = keccak256(abi.encode(gameId, tileIds, newOwners, deadline));
     LibSignature.assertSignedHash(sigHash);
-    LibSignature.setSignedHash(sigHash);
     LibSignature.assertByAuthorizedSigner(sigHash, authSig);
 
     for (uint i = 0; i < tileIds.length; i++) {

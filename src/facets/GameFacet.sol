@@ -197,4 +197,9 @@ contract GameFacet is MetaContext {
     GamePlayer storage gp = g.players[player];
     return g.tiles[gp.tilesOwned.get(index)];
   }
+  
+  function getGameCount() external view returns(uint) {
+    AppStorage storage s = LibAppStorage.diamondStorage();
+    return s.numGames;
+  }
 }

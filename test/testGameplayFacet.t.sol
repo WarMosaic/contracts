@@ -155,7 +155,7 @@ contract TestGamePlayFacet is TestBaseContract {
     }
 
     function compute_sig(bytes32 hash_) internal view returns(bytes memory) {
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(account0_Key, hash_);
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(authAccountKey, hash_);
         return abi.encodePacked(r, s, v);
     }
 
@@ -163,13 +163,6 @@ contract TestGamePlayFacet is TestBaseContract {
         _array = new address[](len);
         for(uint i=0; i<len; ++i) {
             _array[i] = elem;
-        }
-    }
-
-    function _get_players(uint playerCount) internal pure returns(address[] memory _players) {
-        _players = new address[](playerCount);
-        for(uint i=0; i<playerCount; ++i) {
-            _players[i] = vm.addr(0xff + i);
         }
     }
 

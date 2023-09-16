@@ -14,14 +14,6 @@ error InsufficientFundsToBuy(uint amount);
 contract TradingFacet is MetaContext {
   event TileTraded(uint gameId, uint tileId, address buyer, uint amount);
 
-  struct TradeSigData {
-    uint gameId;
-    uint tileId;
-    uint amount;
-    uint deadline;
-    address buyerAddress;
-  }
-
   function settleTileTrade(TradeSigData calldata data, bytes calldata sellerSig, bytes calldata buyerSig, bytes calldata authSig) external {
     (AppStorage storage s, Game storage g, Tile storage t) = LibGame.loadGameTile(data.gameId, data.tileId);
     
@@ -34,12 +26,14 @@ contract TradingFacet is MetaContext {
       revert LibErrors.SigExpired();
     }
 
-    bytes32 sigHash = keccak256(abi.encode(data.gameId, data.tileId, t.owner, data.amount, data.deadline));
-    LibSignature.assertSignedHash(sigHash);
-    LibSignature.setSignedHash(sigHash);
-    LibSignature.assertByAuthorizedSigner(sigHash, authSig);
-    LibSignature.assertBySigner(sigHash, sellerSig, t.owner, "seller");
-    LibSignature.assertBySigner(sigHash, buyerSig, data.buyerAddress, "buyer");
+    {
+      // prevent stack too deep
+      bytes32 sigHash = keccak256(abi.encode(data.gameId, data.tileId, t.owner, data.amount, data.deadline));
+      LibSignature.assertSignedHash(sigHash);
+      LibSignature.assertByAuthorizedSigner(sigHash, authSig);
+      LibSignature.assertBySigner(sigHash, sellerSig, t.owner, "seller");
+      LibSignature.assertBySigner(sigHash, buyerSig, data.buyerAddress, "buyer");
+    }
 
     User storage buyer = s.users[data.buyerAddress];
     if (buyer.balance < data.amount) {
@@ -47,6 +41,8 @@ contract TradingFacet is MetaContext {
     }
 
     {
+      // cache previous owner
+      address seller = t.owner;
       // new owner
       LibGame.transferTile(g, t, data.buyerAddress);
 
@@ -54,7 +50,7 @@ contract TradingFacet is MetaContext {
       unchecked {
         buyer.balance -= data.amount;
         (uint finalAmount, ) = LibGame.calculateAndApplyFeesForGame(g, FeeType.Trading, data.amount, g.players[t.owner].referer);
-        s.users[t.owner].balance += finalAmount;
+        s.users[seller].balance += finalAmount;
       }
 
       g.lastUpdated = block.timestamp;

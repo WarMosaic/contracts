@@ -21,14 +21,11 @@ library LibSignature {
   }
 
   // prevents replay attacks if deadline is still valid
-  function assertSignedHash(bytes32 sigHash) view internal {
-    if(LibAppStorage.diamondStorage().signedHashes[sigHash]) {
+  function assertSignedHash(bytes32 sigHash) internal {
+    AppStorage storage s = LibAppStorage.diamondStorage();
+    if(s.signedHashes[sigHash]) {
       revert LibErrors.InvalidatedSigHash();
     }
-  }
-
-  function setSignedHash(bytes32 sigHash) internal {
-    AppStorage storage s = LibAppStorage.diamondStorage();
     s.signedHashes[sigHash] = true;
   }
 }

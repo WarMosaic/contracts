@@ -76,3 +76,11 @@ struct Game {
 struct User {
   uint balance;
 }
+
+struct TradeSigData {
+  uint gameId;
+  uint tileId;
+  uint amount;
+  uint deadline;
+  address buyerAddress;
+}
