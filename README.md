@@ -40,7 +40,7 @@ pnpm devnet
 Then run in a separate terminal:
 
 ```zsh
-pnpm dep
+pnpm dep local
 ```
 
 The contract addresses can be found in `gemforge.deployments.json`.
