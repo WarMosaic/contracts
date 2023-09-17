@@ -38,6 +38,11 @@ struct AppStorage {
     ///
     // collection id => game id
     mapping(uint => uint) tokenGames;
+
+    ///
+    /// Signed Hashes for replay protection
+    //  hash => isSigned
+    mapping(bytes32 => bool) signedHashes;
 }
 
 library LibAppStorage {
