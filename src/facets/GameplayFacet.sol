@@ -16,7 +16,7 @@ contract GameplayFacet is MetaContext {
   function updateTileOwners(uint gameId, uint[] calldata tileIds, address[] calldata newOwners, uint deadline, bytes calldata authSig) external {
     if(tileIds.length != newOwners.length) revert LibErrors.LengthMismatch();
     if(deadline < block.timestamp) revert LibErrors.SigExpired();
-    (AppStorage storage s, Game storage g) = LibGame.loadGame(gameId);
+    (, Game storage g) = LibGame.loadGame(gameId);
 
     LibGame.assertGameState(g, GameState.Started);
 

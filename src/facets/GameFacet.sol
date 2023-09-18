@@ -70,7 +70,7 @@ contract GameFacet is MetaContext {
   }
 
   function joinGame(uint gameId, uint16 tileId, uint referralCode) external payable {
-    (AppStorage storage s, Game storage g, Tile storage t) = LibGame.loadGameTile(gameId, tileId);
+    (, Game storage g, Tile storage t) = LibGame.loadGameTile(gameId, tileId);
 
     address player = _msgSender();
 
@@ -124,7 +124,7 @@ contract GameFacet is MetaContext {
   }
 
   function claimRewards(uint gameId) external {
-    (AppStorage storage s, Game storage g) = LibGame.loadGame(gameId);
+    (, Game storage g) = LibGame.loadGame(gameId);
     address player = _msgSender();
 
     LibGame.assertGameIsOver(g);
@@ -142,7 +142,7 @@ contract GameFacet is MetaContext {
    * @dev Anyone can timeout a game if it has been inactive for too long.
    */
   function timeoutGame(uint gameId) external {
-    (AppStorage storage s, Game storage g) = LibGame.loadGame(gameId);
+    (, Game storage g) = LibGame.loadGame(gameId);
 
     LibGame.assertGameIsActive(g);
 
@@ -154,52 +154,44 @@ contract GameFacet is MetaContext {
 
   // Getters
 
+  function getGameCount() external view returns(uint) {
+    AppStorage storage s = LibAppStorage.diamondStorage();
+    return s.numGames;
+  }
+
   function getGameNonMappingInfo(uint gameId) external view returns (
-    GameConfig memory cfg,
-    uint id,
-    address creator,
-    address winner,
-    uint numTilesOwned,
-    GameState state,
-    uint lastUpdated,
-    bool transferLocked
+    GameNonMappingInfo memory info
   ) {
-    (AppStorage storage s, Game storage g) = LibGame.loadGame(gameId);
-    cfg = g.cfg;
-    id = g.id;
-    creator = g.creator;
-    winner = g.winner;
-    numTilesOwned = g.numTilesOwned;
-    state = g.state;
-    lastUpdated = g.lastUpdated;
-    transferLocked = g.transferLocked;
+    (, Game storage g) = LibGame.loadGame(gameId);
+    info.cfg = g.cfg;
+    info.id = g.id;
+    info.creator = g.creator;
+    info.winner = g.winner;
+    info.numTilesOwned = g.numTilesOwned;
+    info.state = g.state;
+    info.lastUpdated = g.lastUpdated;
+    info.transferLocked = g.transferLocked;
   }
 
   function getGameTile(uint gameId, uint16 tileId) external view returns (Tile memory) {
-    (AppStorage storage s, Game storage g) = LibGame.loadGame(gameId);
+    (, Game storage g) = LibGame.loadGame(gameId);
     return g.tiles[tileId];
   }
 
   function getGamePlayerNonMappingInfo(uint gameId, address player) external view returns (
-    uint numTilesOwned,
-    address referer,
-    uint referralCode
+    GamePlayerNonMappingInfo memory info
   ) {
-    (AppStorage storage s, Game storage g) = LibGame.loadGame(gameId);
+    (, Game storage g) = LibGame.loadGame(gameId);
     GamePlayer storage gp = g.players[player];
-    numTilesOwned = gp.numTilesOwned;
-    referer = gp.referer;
-    referralCode = gp.referralCode;
+    info.numTilesOwned = gp.numTilesOwned;
+    info.referer = gp.referer;
+    info.referralCode = gp.referralCode;
+    info.claimableReward = gp.claimableReward;
   }
 
   function getGamePlayerTileAtIndex(uint gameId, address player, uint index) external view returns (Tile memory) {
-    (AppStorage storage s, Game storage g) = LibGame.loadGame(gameId);
+    (, Game storage g) = LibGame.loadGame(gameId);
     GamePlayer storage gp = g.players[player];
     return g.tiles[gp.tilesOwned.get(index)];
-  }
-  
-  function getGameCount() external view returns(uint) {
-    AppStorage storage s = LibAppStorage.diamondStorage();
-    return s.numGames;
   }
 }

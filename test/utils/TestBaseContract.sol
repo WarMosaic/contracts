@@ -7,6 +7,8 @@ import { DiamondProxy } from "src/generated/DiamondProxy.sol";
 import { IDiamondProxy } from "src/generated/IDiamondProxy.sol";
 import { LibDiamondHelper } from "src/generated/LibDiamondHelper.sol";
 import { InitDiamond } from "src/init/InitDiamond.sol";
+import { GameConfig, GameNonMappingInfo, GameState } from "src/shared/Structs.sol";
+
 
 abstract contract TestBaseContract is Test {
   // use private key to enable signing with account0 (Auth Account)
@@ -39,15 +41,60 @@ abstract contract TestBaseContract is Test {
     diamond.diamondCut(cut, address(init), abi.encodeWithSelector(init.init.selector));
   }
 
-  function _get_players(uint playerCount) internal pure returns(address[] memory _players) {
-    _players = new address[](playerCount);
-    for(uint i=0; i<playerCount; ++i) {
-        _players[i] = vm.addr(0xff + i);
+  function getPlayers(uint playerCount) internal pure returns (address[] memory players_) {
+    players_ = new address[](playerCount);
+    for (uint i = 0; i < playerCount; ++i) {
+      players_[i] = vm.addr(0xff + i);
     }
-}
+  }
 
-function _compute_sig(bytes32 hash_, uint key) internal view returns(bytes memory) {
+  function getTileIds(uint numTiles) internal pure returns (uint[] memory tiles_) {
+    tiles_ = new uint[](numTiles);
+    for (uint i = 0; i < numTiles; ++i) {
+      tiles_[i] = i + 1;
+    }
+  }
+
+  function createGame(GameConfig memory cfg) internal returns (uint) {
+    diamond.createGame(cfg);
+    return diamond.getGameCount();
+  }
+
+  function setupBasicGame(GameConfig memory cfg) internal returns (uint _gameId, address[] memory _players) {
+    _gameId = createGame(cfg);
+
+    _players = getPlayers(4);
+
+    // give players equal chance to join.
+    joinGameWithPlayersEqualChance(_gameId, _players, cfg.numTiles);
+
+    GameNonMappingInfo memory info = diamond.getGameNonMappingInfo(_gameId);
+    assertEq(info.numTilesOwned, cfg.numTiles);
+    assertEq(uint(info.state), uint(GameState.Started));
+  }
+
+  function joinGameWithPlayersEqualChance(
+    uint gameId_,
+    address[] memory players_,
+    uint _tileCount
+  ) internal {
+    GameConfig memory cfg = diamond.getGameNonMappingInfo(gameId_).cfg;
+
+    for (uint i = 0; i < _tileCount; i++) {
+      uint _playerIdx = i % players_.length;
+      vm.startPrank(players_[_playerIdx]);
+      vm.deal(players_[_playerIdx], cfg.tileCost);
+      diamond.joinGame{ value: cfg.tileCost }(gameId_, uint16(i + 1), 0);
+      vm.stopPrank();
+    }
+  }
+
+  function computeSig(bytes32 hash_, uint key) internal pure returns (bytes memory) {
     (uint8 v, bytes32 r, bytes32 s) = vm.sign(key, hash_);
     return abi.encodePacked(r, s, v);
-}
+  }
+
+  function computeAuthSig(bytes32 hash_) internal view returns (bytes memory) {
+    return computeSig(hash_, authAccountKey);
+  }
 }

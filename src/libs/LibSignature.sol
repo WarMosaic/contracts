@@ -9,13 +9,13 @@ import { LibErrors } from "./LibErrors.sol";
 error SignatureInvalid(string reason);
 
 library LibSignature {
-  function assertBySigner(bytes32 sigHash, bytes memory signature, address signer, string memory reason) internal {
+  function assertBySigner(bytes32 sigHash, bytes memory signature, address signer, string memory reason) internal view {
     if (!SignatureChecker.isValidSignatureNow(signer, sigHash, signature)) {
       revert SignatureInvalid(reason);
     }
   }
 
-  function assertByAuthorizedSigner(bytes32 sigHash, bytes memory signature) internal {
+  function assertByAuthorizedSigner(bytes32 sigHash, bytes memory signature) internal view {
     address signer = LibSettings.getAuthorizedSignerWallet();
     LibSignature.assertBySigner(sigHash, signature, signer, "auth");
   }

@@ -58,6 +58,13 @@ struct GamePlayer {
   UintList tilesOwned;
 }
 
+struct GamePlayerNonMappingInfo {
+  address referer;
+  uint referralCode;
+  uint claimableReward;
+  uint numTilesOwned;
+}
+
 struct Game {
   GameConfig cfg;
   uint id;
@@ -71,6 +78,18 @@ struct Game {
   mapping(uint => Tile) tiles;
   mapping(address => GamePlayer) players;
   mapping(uint => address) playersByReferralCode;
+}
+
+struct GameNonMappingInfo {
+  GameConfig cfg;
+  uint id;
+  address creator;
+  address winner;
+  uint numTilesOwned;
+  uint numTilesPotsClaimed;
+  GameState state;
+  uint lastUpdated;
+  bool transferLocked;
 }
 
 struct User {
