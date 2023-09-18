@@ -45,14 +45,6 @@ pnpm dep local
 
 The contract addresses can be found in `gemforge.deployments.json`.
 
-### Deploy to Sepolia
-
-```
-pnpn deploy sepolia
-```
-
-The contract addresses can be found in `gemforge.deployments.json`.
-
 ## License
 
 MIT - see [LICENSE.md](LICENSE.md)
