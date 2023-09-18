@@ -34,12 +34,6 @@ struct AppStorage {
     mapping(address => User) users;
 
     ///
-    /// NFT tokens
-    ///
-    // collection id => game id
-    mapping(uint => uint) tokenGames;
-
-    ///
     /// Signed Hashes for replay protection
     //  hash => isSigned
     mapping(bytes32 => bool) signedHashes;
