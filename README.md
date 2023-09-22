@@ -45,6 +45,8 @@ pnpm dep local
 
 The contract addresses can be found in `gemforge.deployments.json`.
 
+_Note: The local node deployment wallet mnemonic is: `test test test test test test test test test test test junk`._
+
 ## License
 
 MIT - see [LICENSE.md](LICENSE.md)
