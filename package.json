@@ -14,7 +14,7 @@
   "scripts": {
     "prepare": "husky install && npx husky add .husky/commit-msg 'npx commitlint --edit $1'",
     "prettify": "prettier --write .",
-    "devnet": "anvil",
+    "devnet": "anvil --chain-id 1337",
     "clean": "forge clean",
     "test": "forge test -v",
     "test-cov": "forge coverage -vv",

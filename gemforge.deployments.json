@@ -1,12 +1,52 @@
 {
   "local": {
-    "chainId": 31337,
+    "chainId": 1337,
     "contracts": [
+      {
+        "name": "ERC20Facet",
+        "fullyQualifiedName": "ERC20Facet.sol:ERC20Facet",
+        "sender": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+        "txHash": "0x2b6b06f2e3d0b5fc959f897e3ce10083548103429ed78a3b59b8d1d88d59f14a",
+        "onChain": {
+          "address": "0x7a2088a1bFc9d81c55368AE168C2C02570cB814F",
+          "constructorArgs": []
+        }
+      },
+      {
+        "name": "GameFacet",
+        "fullyQualifiedName": "GameFacet.sol:GameFacet",
+        "sender": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+        "txHash": "0x5c04255683e59b69fa80f4f7bd4efd769caaec21c12d4c91b81529db4c5846d7",
+        "onChain": {
+          "address": "0x09635F643e140090A9A8Dcd712eD6285858ceBef",
+          "constructorArgs": []
+        }
+      },
+      {
+        "name": "GameplayFacet",
+        "fullyQualifiedName": "GameplayFacet.sol:GameplayFacet",
+        "sender": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+        "txHash": "0x97d58008f1326cb81b1ae4bc81e4a786cfe2bdb1c4f4bcb9bfe62d0a916450ce",
+        "onChain": {
+          "address": "0xc5a5C42992dECbae36851359345FE25997F5C42d",
+          "constructorArgs": []
+        }
+      },
+      {
+        "name": "TradingFacet",
+        "fullyQualifiedName": "TradingFacet.sol:TradingFacet",
+        "sender": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+        "txHash": "0x2a99eca3da89235a853d59c6bf739adfcc5d941169dd326e66b8a99dbbfb49f0",
+        "onChain": {
+          "address": "0x67d269191c92Caf3cD7723F116c85e6E9bf55933",
+          "constructorArgs": []
+        }
+      },
       {
         "name": "DiamondProxy",
         "fullyQualifiedName": "DiamondProxy.sol:DiamondProxy",
         "sender": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-        "txHash": "0xae088b62ce30c85e950cdf9809ed4a51378ba93ad5dedec3c0568a40eb3abee7",
+        "txHash": "0x8724b728012ebe90e60079e2d86ae0b60b42c3b0a990a5ba0133f992fcd9d8cc",
         "onChain": {
           "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
           "constructorArgs": [
@@ -15,50 +55,10 @@
         }
       },
       {
-        "name": "ERC20Facet",
-        "fullyQualifiedName": "ERC20Facet.sol:ERC20Facet",
-        "sender": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-        "txHash": "0x63bb5fe91ee17beec022df606dd5f95529bdc3ad3646da3f1a7f4ab1636240c9",
-        "onChain": {
-          "address": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
-          "constructorArgs": []
-        }
-      },
-      {
-        "name": "GameFacet",
-        "fullyQualifiedName": "GameFacet.sol:GameFacet",
-        "sender": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-        "txHash": "0x01cbb2afd3f01d6031c1bf8ba725804364fa31e3d0a96589c13637e1ac0833af",
-        "onChain": {
-          "address": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
-          "constructorArgs": []
-        }
-      },
-      {
-        "name": "GameplayFacet",
-        "fullyQualifiedName": "GameplayFacet.sol:GameplayFacet",
-        "sender": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-        "txHash": "0x23879437f5fafaf4109bd19e8d9d99cc7ed4656040f162a9bda2eb81e15908df",
-        "onChain": {
-          "address": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
-          "constructorArgs": []
-        }
-      },
-      {
-        "name": "TradingFacet",
-        "fullyQualifiedName": "TradingFacet.sol:TradingFacet",
-        "sender": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-        "txHash": "0x58c41b8c30a1ed0e591c897cf10060b2fafb4d74d31b06990398aea77c31a6dd",
-        "onChain": {
-          "address": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
-          "constructorArgs": []
-        }
-      },
-      {
         "name": "UserFacet",
         "fullyQualifiedName": "UserFacet.sol:UserFacet",
         "sender": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-        "txHash": "0x216199789fc28fb681124859015a00a8d21549adc79c7b886444ecf7e45b3a74",
+        "txHash": "0xb311808c56d6ce5916553388d8fd15673ab1f723791a27170db8035b5a2f3ace",
         "onChain": {
           "address": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
           "constructorArgs": []
@@ -68,7 +68,7 @@
         "name": "InitDiamond",
         "fullyQualifiedName": "InitDiamond.sol:InitDiamond",
         "sender": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-        "txHash": "0x54d89d41118788417f9a1d4a42b66cf8b257dc6931892d86b2834555c9c515c5",
+        "txHash": "0x6c68841f538c0b82147ce505e70ed688b5d499cc112008fa453aba596dbde988",
         "onChain": {
           "address": "0x0165878A594ca255338adfa4d48449f69242Eb8F",
           "constructorArgs": []
