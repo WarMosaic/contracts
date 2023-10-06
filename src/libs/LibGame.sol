@@ -46,6 +46,12 @@ library LibGame {
     }
   }
 
+  function setupPlayerReferralCode(Game storage g, address player) internal returns (uint) {
+    GamePlayer storage gp = g.players[player];
+    gp.referralCode = uint(keccak256(abi.encodePacked(player, msg.data, g.lastUpdated))) % 100000000;
+    g.playersByReferralCode[gp.referralCode] = player;
+  }
+
   function loadGame(uint gameId) internal view returns (AppStorage storage s, Game storage game) {
     s = LibAppStorage.diamondStorage();
     assertGameId(s, gameId);
@@ -104,7 +110,7 @@ library LibGame {
 
   function tryAndClaimQuad(Game storage g, Tile storage t) private {
     // if quad is not already claimed then try and claim it
-    if (!t.potClaimed) {
+    if (t.pot.remaining > 0) {
       // work out quad this tile belongs to
       uint quadStartId = ((t.id - 1) / 4) * 4 + 1;
       uint quadEndId = quadStartId + 3;
@@ -122,9 +128,10 @@ library LibGame {
 
       for (uint i = quadStartId; i <= quadEndId; i++) {
         Tile storage quadTile = g.tiles[i];
-        quadTile.potClaimed = true;
         // transfer pot to owner
-        g.players[quadTile.owner].claimableReward += quadTile.pot;
+        g.players[quadTile.owner].claimableReward += quadTile.pot.remaining;
+        g.pot.remaining -= quadTile.pot.remaining;
+        quadTile.pot.remaining = 0;
       }
 
       emit QuadClaimed(g.id, quadStartId, t.owner);

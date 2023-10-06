@@ -78,7 +78,7 @@ module.exports = {
     // shell command to execute before build
     preBuild: '',
     // shell command to execute after build
-    postBuild: 'scripts/abi.js',
+    postBuild: '',
     // shell command to execute before deploy
     preDeploy: '',
     // shell command to execute after deploy

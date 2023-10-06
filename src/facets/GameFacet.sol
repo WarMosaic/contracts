@@ -22,9 +22,9 @@ contract GameFacet is MetaContext {
 
   function createGame(GameConfig memory cfg) external {
     /*
-      Only square numbers divisible by 4 are allowed, with a min of 16 tiles and a max of 1024:
+      Only square numbers divisible by 4 are allowed, with a min of 4, 16 tiles and a max of 1024:
 
-      16, 64, 144, 256, 400, 576, 784, 1024
+      4, 16, 64, 144, 256, 400, 576, 784, 1024
     */
     // first let's check the number is divisible by 4
     if (cfg.numTiles % 4 != 0) {
@@ -32,7 +32,7 @@ contract GameFacet is MetaContext {
     }
     // now let's check against a list
     bool valid = false;
-    uint[8] memory validNumTiles = [uint(16), 64, 144, 256, 400, 576, 784, 1024];
+    uint[9] memory validNumTiles = [uint(4), 16, 64, 144, 256, 400, 576, 784, 1024];
     for (uint i = 0; i < validNumTiles.length; i++) {
       if (cfg.numTiles == validNumTiles[i]) {
         valid = true;
@@ -48,8 +48,8 @@ contract GameFacet is MetaContext {
       revert GameInvalidTileCost(cfg.tileCost);
     }
 
-    // max tiles per player must be at least 1 and no more than the total number of tiles
-    if (cfg.maxTilesPerPlayer < 1 || cfg.maxTilesPerPlayer > cfg.numTiles) {
+    // max tiles per player must be at least 1 and no more than the total number of tiles - 1
+    if (cfg.maxTilesPerPlayer < 1 || cfg.maxTilesPerPlayer >= cfg.numTiles) {
       revert GameInvalidMaxTilesPerPlayer(cfg.maxTilesPerPlayer);
     }
 
@@ -65,6 +65,8 @@ contract GameFacet is MetaContext {
     g.cfg = cfg;
     g.state = GameState.AwaitingPlayers;
     g.lastUpdated = block.timestamp;
+
+    LibGame.setupPlayerReferralCode(g, g.creator);
 
     emit GameCreated(g.creator, s.numGames);
   }
@@ -99,8 +101,7 @@ contract GameFacet is MetaContext {
     GamePlayer storage gp = g.players[player];
     if (gp.numTilesOwned == 1) {
       gp.referer = g.playersByReferralCode[referralCode];
-      gp.referralCode = uint(keccak256(abi.encodePacked(player, _msgData(), g.lastUpdated))) % 10000;
-      g.playersByReferralCode[referralCode] = player;
+      LibGame.setupPlayerReferralCode(g, player);
     }
 
     // apply fees
@@ -109,8 +110,9 @@ contract GameFacet is MetaContext {
     // add tile to game
     g.numTilesOwned++;
     t.id = tileId;
-    t.pot = finalAmount;
-    t.potClaimed = false;
+    t.pot = Pot(finalAmount, finalAmount);
+    g.pot.initial += finalAmount;
+    g.pot.remaining += finalAmount;
 
     // ready to start game once all tiles are owned
     if (g.numTilesOwned == g.cfg.numTiles) {
@@ -168,6 +170,7 @@ contract GameFacet is MetaContext {
     info.creator = g.creator;
     info.winner = g.winner;
     info.numTilesOwned = g.numTilesOwned;
+    info.pot = g.pot;
     info.state = g.state;
     info.lastUpdated = g.lastUpdated;
     info.transferLocked = g.transferLocked;

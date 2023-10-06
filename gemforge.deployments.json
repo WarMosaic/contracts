@@ -3,22 +3,12 @@
     "chainId": 1337,
     "contracts": [
       {
-        "name": "ERC20Facet",
-        "fullyQualifiedName": "ERC20Facet.sol:ERC20Facet",
-        "sender": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-        "txHash": "0x2b6b06f2e3d0b5fc959f897e3ce10083548103429ed78a3b59b8d1d88d59f14a",
-        "onChain": {
-          "address": "0x7a2088a1bFc9d81c55368AE168C2C02570cB814F",
-          "constructorArgs": []
-        }
-      },
-      {
         "name": "GameFacet",
         "fullyQualifiedName": "GameFacet.sol:GameFacet",
         "sender": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-        "txHash": "0x5c04255683e59b69fa80f4f7bd4efd769caaec21c12d4c91b81529db4c5846d7",
+        "txHash": "0x073fad108ec4f950b19c6f07a932508f1580fcfdf2c97b19d65f28f059731194",
         "onChain": {
-          "address": "0x09635F643e140090A9A8Dcd712eD6285858ceBef",
+          "address": "0xFD471836031dc5108809D173A067e8486B9047A3",
           "constructorArgs": []
         }
       },
@@ -26,9 +16,9 @@
         "name": "GameplayFacet",
         "fullyQualifiedName": "GameplayFacet.sol:GameplayFacet",
         "sender": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-        "txHash": "0x97d58008f1326cb81b1ae4bc81e4a786cfe2bdb1c4f4bcb9bfe62d0a916450ce",
+        "txHash": "0x846475a086c5f42476419b057cbd7466e1e09cef9a7a150d78d3e93dcb81979c",
         "onChain": {
-          "address": "0xc5a5C42992dECbae36851359345FE25997F5C42d",
+          "address": "0x70e0bA845a1A0F2DA3359C97E0285013525FFC49",
           "constructorArgs": []
         }
       },
@@ -36,9 +26,29 @@
         "name": "TradingFacet",
         "fullyQualifiedName": "TradingFacet.sol:TradingFacet",
         "sender": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-        "txHash": "0x2a99eca3da89235a853d59c6bf739adfcc5d941169dd326e66b8a99dbbfb49f0",
+        "txHash": "0x60a196ee181054bebba5fdb23e655ecbe85d3ecb06cda3251aa062791f1a2310",
         "onChain": {
-          "address": "0x67d269191c92Caf3cD7723F116c85e6E9bf55933",
+          "address": "0x4826533B4897376654Bb4d4AD88B7faFD0C98528",
+          "constructorArgs": []
+        }
+      },
+      {
+        "name": "ERC20Facet",
+        "fullyQualifiedName": "ERC20Facet.sol:ERC20Facet",
+        "sender": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+        "txHash": "0x0ad6d5ea3f85dfe7214b7362a351ad5f0775ecae4cf4b021009cfd48c84c86d7",
+        "onChain": {
+          "address": "0x610178dA211FEF7D417bC0e6FeD39F05609AD788",
+          "constructorArgs": []
+        }
+      },
+      {
+        "name": "UserFacet",
+        "fullyQualifiedName": "UserFacet.sol:UserFacet",
+        "sender": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+        "txHash": "0x0d14768806251fe7dfa83903a865870067303437690466e590e4a24ab6baa27a",
+        "onChain": {
+          "address": "0x9A676e781A523b5d0C0e43731313A708CB607508",
           "constructorArgs": []
         }
       },
@@ -52,16 +62,6 @@
           "constructorArgs": [
             "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
           ]
-        }
-      },
-      {
-        "name": "UserFacet",
-        "fullyQualifiedName": "UserFacet.sol:UserFacet",
-        "sender": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-        "txHash": "0xb311808c56d6ce5916553388d8fd15673ab1f723791a27170db8035b5a2f3ace",
-        "onChain": {
-          "address": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
-          "constructorArgs": []
         }
       },
       {

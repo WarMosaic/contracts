@@ -37,11 +37,15 @@ enum GameState {
   TimedOut
 }
 
+struct Pot {
+  uint initial;
+  uint remaining;
+}
+
 struct Tile {
   uint16 id;    // struct packing, since id cannot exceed 1,024.
   address owner;
-  bool potClaimed;
-  uint pot;
+  Pot pot;
 }
 
 struct GameConfig {
@@ -72,6 +76,7 @@ struct Game {
   address winner;
   uint numTilesOwned;
   uint numTilesPotsClaimed;
+  Pot pot;
   GameState state;
   uint lastUpdated;
   bool transferLocked;
@@ -87,6 +92,7 @@ struct GameNonMappingInfo {
   address winner;
   uint numTilesOwned;
   uint numTilesPotsClaimed;
+  Pot pot;
   GameState state;
   uint lastUpdated;
   bool transferLocked;

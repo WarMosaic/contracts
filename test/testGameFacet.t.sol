@@ -95,6 +95,7 @@ contract TestGameFacet is TestBaseContract {
   // Internal methods
 
   function setupValidTileCountsForGameCreation() internal {
+    validTileCountForGameCreation[4] = true;
     validTileCountForGameCreation[16] = true;
     validTileCountForGameCreation[64] = true;
     validTileCountForGameCreation[256] = true;
